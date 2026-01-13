@@ -1,4 +1,6 @@
 #include <iostream>
+#include <chrono>
+#include <iomanip>
 #include "route_planner/graph.hpp"
 #include "route_planner/map_loader.hpp"
 #include "route_planner/router.hpp"
@@ -41,25 +43,37 @@ int main() {
     //     }
     // }
 
-    // Test Dijkstra's Algorithm
+    // Test A* Algorithm
     int startNode = 1;
     int endNode = 5;
 
     std::cout << "Finding shortest path from " << startNode << " to " << endNode << "..." << std::endl;
+    std::cout << "--- Performance Benchmark ---" << std::endl;
+
+    // Take a 'snapshot' of current time
+    auto startTime = std::chrono::high_resolution_clock::now();
 
     auto result = RoutePlanner::Router::computePath(myMap, startNode, endNode);
 
+    // Take a snapshot after algorithm completes
+    auto endTime = std::chrono::high_resolution_clock::now();
+
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime-startTime);
+
     if (result.success) {
-        std::cout << "Path found from Node 1 to Node 5:" << std::endl;
-        // for (int nodeId : result.path) {
-        //     std::cout << " -> Node ID: " << nodeId << std::endl;
+        std::cout << "Status: Success" << std::endl;
+        std::cout << "Execution Time: " << duration.count() << " microseconds" << std::endl;
+        std::cout << "Path Distance: " << std::fixed << std::setprecision(2) << result.totalDist << std::endl;
+        // std::cout << "Path found from Node 1 to Node 5:" << std::endl;
+        // // for (int nodeId : result.path) {
+        // //     std::cout << " -> Node ID: " << nodeId << std::endl;
+        // // }
+        // std::cout << "Route: ";
+        // for (size_t i = 0; i < result.path.size(); ++i) {
+        //     std::cout << result.path[i] << (i == result.path.size() - 1 ? "" : " -> ");
         // }
-        std::cout << "Route: ";
-        for (size_t i = 0; i < result.path.size(); ++i) {
-            std::cout << result.path[i] << (i == result.path.size() - 1 ? "" : " -> ");
-        }
-        std::cout << std::endl;
-        std::cout << "Total Distance: " << result.totalDist << std::endl;
+        // std::cout << std::endl;
+        // std::cout << "Total Distance: " << result.totalDist << std::endl;
     } else {
         std::cout << "No path found from Node 1 to Node 5." << std::endl;
     }
