@@ -2,27 +2,34 @@
 #include <queue>
 #include <limits>
 #include <algorithm>
+#include <cmath>
 
 namespace RoutePlanner {
 
     // helper struct for priority queue
     struct NodeDistance {
         int id;
-        double dist;
+        double fScore; // gScore + heuristic
 
         // Overload 'greater than' op
         // std::priority_queue uses max-heap by default
         // We want min-heap behavior
         bool operator>(const NodeDistance& other) const {
-            return dist > other.dist;
+            return fScore > other.fScore;
         }
     };
+
+    // Helper function to calculate straight-line (Euclidean distance)
+    double calculateHeuristic(const Node* a, const Node* b) {
+        if (!a || !b) return 0.0;
+        return std::sqrt(std::pow(a->x - b->x, 2) + std::pow(a->y - b->y, 2));
+    }
 
     RouteResult Router::computePath(const Graph& graph, int startId, int endId) {
         // Setup Data Structures
         // Stores shortest known distance to each node
         // Key: Node ID, Value: Distance from start
-        std::unordered_map<int, double> distances;
+        std::unordered_map<int, double> gScores;
 
         // Stores "parent" of each node for path reconstruction
         // Key: Node ID, Value: Parent Node ID
@@ -32,14 +39,21 @@ namespace RoutePlanner {
         // Priority Queue: <Type, Container, Comparator>
         std::priority_queue<NodeDistance, std::vector<NodeDistance>, std::greater<NodeDistance>> pq;
 
+        // Keep for A* heuristic
+        const Node* endNode = graph.getNode(endId);
+        if (!endNode) return { {}, 0.0, false };
+
         // Init all distances to infinity
         for (const auto& pair : graph.getAllNodes()) {
-            distances[pair.first] = std::numeric_limits<double>::infinity();
+            gScores[pair.first] = std::numeric_limits<double>::infinity();
         }
 
         // Start algo
-        distances[startId] = 0.0;
-        pq.push({startId, 0.0});
+        gScores[startId] = 0.0;
+
+        // Init fScore is gScore(0) + heuristic to end
+        double initialH = calculateHeuristic(graph.getNode(startId), endNode);
+        pq.push({startId, initialH});
 
         bool found = false;
 
@@ -55,20 +69,24 @@ namespace RoutePlanner {
             }
 
             // If found better path before, skip
-            if (current.dist > distances[current.id]) continue;
+            // if (current.dist > distances[current.id]) continue;
 
             const Node* node = graph.getNode(current.id);
             if (!node) continue; // Safety check
 
             // Check all neighbors
             for (const auto& edge : node->neighbors) {
-                double newDist = distances[current.id] + edge.distance;
+                double tentativeGScore = gScores[current.id] + edge.distance;
 
                 // If found shorter path to neighbor
-                if (newDist < distances[edge.targetNodeID]) {
-                    distances[edge.targetNodeID] = newDist;
+                if (tentativeGScore < gScores[edge.targetNodeID]) {
+                    gScores[edge.targetNodeID] = tentativeGScore;
                     parents[edge.targetNodeID] = current.id;
-                    pq.push({edge.targetNodeID, newDist});
+
+                    // A* advantage
+                    // Priority = Distance Traveled + Estimated to Goal
+                    double h = calculateHeuristic(graph.getNode(edge.targetNodeID), endNode);
+                    pq.push({edge.targetNodeID, tentativeGScore + h});
                 }
             }
         }
@@ -77,7 +95,7 @@ namespace RoutePlanner {
         RouteResult result;
         if (found) {
             result.success = true;
-            result.totalDist = distances[endId];
+            result.totalDist = gScores[endId];
 
             // Backtrack from endId to startId
             int curr = endId;
@@ -91,7 +109,6 @@ namespace RoutePlanner {
             std::reverse(result.path.begin(), result.path.end());
         } else {
             result.success = false;
-            result.totalDist = 0.0;
         }
 
         return result;

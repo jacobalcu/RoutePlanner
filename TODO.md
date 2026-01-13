@@ -19,13 +19,13 @@
 - [x] Implement Dijkstra’s Algorithm
 - [x] Use `std::priority_queue` for optimization
 - [x] Create a `Route` struct to store results (distance + path)
-- [ ] (Optional/Intermediate) Implement A\* Search logic
+- [x] (Optional/Intermediate) Implement A\* Search logic
 
 ## Phase 4: Quality Assurance & Engineering Best Practices
 
-- [ ] Set up **Google Test** or **Catch2** integration
-- [ ] Write unit tests for Graph edge cases (disconnected nodes, cycles)
-- [ ] Write unit tests for Algorithm accuracy
+- [x] Set up **Google Test** or **Catch2** integration
+- [x] Write unit tests for Graph edge cases (disconnected nodes, cycles)
+- [x] Write unit tests for Algorithm accuracy
 - [ ] Refactor code for "Clean Code" principles (const-correctness, smart pointers)
 
 ## Phase 5: Final Interface & Polish
