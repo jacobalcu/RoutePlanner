@@ -36,6 +36,9 @@ namespace RoutePlanner {
         // Return pointer to node by ID, nullptr if not found
         const Node* getNode(int id) const;
 
+        // Find Node by Name
+        int findIdByName(const std::string& name) const;
+
         // Return entire map
         // const at end ensures method does not modify class members
         const std::unordered_map<int, Node>& getAllNodes() const;

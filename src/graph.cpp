@@ -24,6 +24,14 @@ namespace RoutePlanner {
         }
     }
 
+    int Graph::findIdByName(const std::string& name) const {
+        for (const auto& [id, node] : nodes) {
+            if (node.name == name) return id;
+        }
+        return -1; // Not found
+    }
+
+
     const Node* Graph::getNode(int id) const {
         auto it = nodes.find(id);
         if (it != nodes.end()) {

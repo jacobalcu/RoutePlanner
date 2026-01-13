@@ -30,6 +30,6 @@
 
 ## Phase 5: Final Interface & Polish
 
-- [ ] Create a CLI (Command Line Interface) for user start/end points
-- [ ] Add execution time logging (benchmarking)
+- [x] Create a CLI (Command Line Interface) for user start/end points
+- [x] Add execution time logging (benchmarking)
 - [ ] Final documentation in README.md
