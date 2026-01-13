@@ -21,11 +21,14 @@ namespace RoutePlanner {
     RouteResult Router::computePath(const Graph& graph, int startId, int endId) {
         // Setup Data Structures
         // Stores shortest known distance to each node
+        // Key: Node ID, Value: Distance from start
         std::unordered_map<int, double> distances;
 
         // Stores "parent" of each node for path reconstruction
+        // Key: Node ID, Value: Parent Node ID
         std::unordered_map<int, int> parents;
 
+        // Min-heap priority queue to select next node with smallest distance
         // Priority Queue: <Type, Container, Comparator>
         std::priority_queue<NodeDistance, std::vector<NodeDistance>, std::greater<NodeDistance>> pq;
 
@@ -41,6 +44,7 @@ namespace RoutePlanner {
         bool found = false;
 
         while(!pq.empty()) {
+            // Get node with smallest distance in pq
             NodeDistance current = pq.top();
             pq.pop();
 

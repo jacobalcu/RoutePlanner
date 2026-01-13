@@ -11,15 +11,14 @@
 ## Phase 2: Data Handling & Parsing
 
 - [x] Create sample data in `data/nodes.csv` and `data/edges.csv`
-- [ ] Create sample map data in `data/map.csv`
-- [ ] Implement a `MapLoader` class/utility to parse files
-- [ ] Add basic error handling for malformed input files
+- [x] Implement a `MapLoader` class/utility to parse files
+- [x] Add basic error handling for malformed input files
 
 ## Phase 3: Core Algorithm Implementation
 
-- [ ] Implement Dijkstra’s Algorithm
-- [ ] Use `std::priority_queue` for optimization
-- [ ] Create a `Route` struct to store results (distance + path)
+- [x] Implement Dijkstra’s Algorithm
+- [x] Use `std::priority_queue` for optimization
+- [x] Create a `Route` struct to store results (distance + path)
 - [ ] (Optional/Intermediate) Implement A\* Search logic
 
 ## Phase 4: Quality Assurance & Engineering Best Practices
