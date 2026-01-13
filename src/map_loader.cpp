@@ -1,4 +1,5 @@
 #include "route_planner/map_loader.hpp"
+#include "route_planner/utility.hpp"
 #include <fstream> // File stream
 #include <sstream> // String stream
 #include <iostream> // For debugging
@@ -33,7 +34,7 @@ namespace RoutePlanner {
                 std::getline(ss, item, ','); x = std::stod(item);
                 std::getline(ss, item, ','); y = std::stod(item);
 
-                graph.addNode(id, name, x, y);
+                graph.addNode(id, toLower(name), x, y);
             } catch(...) {
                 // '...' catches all exceptions
                 continue;
