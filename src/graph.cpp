@@ -1,7 +1,7 @@
 #include "route_planner/graph.hpp"
 #include <stdexcept>
 
-namespace route_planner {
+namespace RoutePlanner {
     void Graph::addNode(int id, const std::string& name, double x, double y) {
         // Use ID as key to insert new Node
         // If ID already exists, this will overwrite it

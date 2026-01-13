@@ -12,5 +12,6 @@ include_directories(include)
 add_executable(RoutePlanner 
     src/main.cpp 
     src/graph.cpp 
+    src/map_loader.cpp
     src/router.cpp
 )

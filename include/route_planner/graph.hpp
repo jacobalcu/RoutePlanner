@@ -5,7 +5,7 @@
 #include <string>
 #include <unordered_map>
 
-namespace route_planner {
+namespace RoutePlanner {
     // Rep directed connection from one node to another
     struct Edge {
         int targetNodeID;
