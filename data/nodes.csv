@@ -1,6 +1,6 @@
 # id, name, x, y
-1,Central Station, 0.0, 0.0
-2,Library, 2.0, 3.0
-3,Park Entrance, 5.0, 1.0
-4,Coffee Shop, 1.0, 6.0
-5,Museum, 6.0, 7.0
+1,Central Station,0,10
+2,Coffee Shop,5,8
+3,Park,10,10
+4,Library,2,5
+5,Museum,8,2

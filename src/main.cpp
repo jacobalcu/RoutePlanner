@@ -6,6 +6,7 @@
 #include "route_planner/graph.hpp"
 #include "route_planner/map_loader.hpp"
 #include "route_planner/router.hpp"
+#include "route_planner/visualizer.hpp"
 
 // Not using namespace "RoutePlanner"
 // Prefix with RoutePlanner:: to know where classes come from
@@ -80,6 +81,10 @@ int main() {
                           << (i == result.path.size() - 1 ? "" : " -> ");
             }
             std::cout << "\n----------------------------------------" << std::endl;
+
+            // Visualize route in ASCII
+            std::cout << "\nMap Visualization:\n" << std::endl;
+            RoutePlanner::drawAsciiMap(myMap, result.path);
         } else {
             std::cout << ">> No path exists between these points." << std::endl;
         }

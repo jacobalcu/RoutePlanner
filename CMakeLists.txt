@@ -21,6 +21,7 @@ add_library(RoutePlannerLib
     src/graph.cpp
     src/map_loader.cpp
     src/router.cpp
+    src/visualizer.cpp
 )
 target_include_directories(RoutePlannerLib PUBLIC include)
 
