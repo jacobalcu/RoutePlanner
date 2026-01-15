@@ -7,7 +7,11 @@
 
 namespace RoutePlanner {
     void displaySFML(const Graph& graph, const std::vector<int>& path) {
-        sf::RenderWindow window(sf::VideoMode({800, 600}), "Route Planner Visualizer");
+        // Add antialiasing to make it smoother
+        sf::ContextSettings settings;
+        settings.antiAliasingLevel = 8; // higher = smoother
+
+        sf::RenderWindow window(sf::VideoMode({800, 600}), "Route Planner", sf::State::Windowed, settings);
 
         sf::Font font;
         if (!font.openFromFile("assets/font.ttf")) {
@@ -36,6 +40,11 @@ namespace RoutePlanner {
         while (window.isOpen()) {
             while (const std::optional event = window.pollEvent()) {
                 if (event->is<sf::Event::Closed>()) window.close();
+                if (event->is<sf::Event::KeyPressed>()) {
+                    if (event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::Escape) {
+                        window.close();
+                    }
+                }
             }
 
             window.clear(sf::Color(30,30,30)); // Dark grey
@@ -73,7 +82,12 @@ namespace RoutePlanner {
                 sf::CircleShape circle(5.f);
                 circle.setOrigin({5.f, 5.f});
                 circle.setPosition(toPixel(node.x, node.y));
-                circle.setFillColor(sf::Color::White);
+
+                // Start node is green, end is red, others white
+                if(id== path.front()) circle.setFillColor(sf::Color::Green);
+                else if(id== path.back()) circle.setFillColor(sf::Color::Red);
+                else circle.setFillColor(sf::Color::White);
+
                 window.draw(circle);
 
                 // Draw label
