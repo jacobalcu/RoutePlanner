@@ -1,12 +1,15 @@
 #include "route_planner/graph.hpp"
 #include "route_planner/visualizer.hpp"
+#include "route_planner/router.hpp"
+#include <SFML/Graphics.hpp>
+#include <cmath>
 #include <vector>
 #include <iostream>
 #include <algorithm>
 #include <optional>
 
 namespace RoutePlanner {
-    void displaySFML(const Graph& graph, const std::vector<int>& path) {
+    void displaySFML(const Graph& graph) {
         // Add antialiasing to make it smoother
         sf::ContextSettings settings;
         settings.antiAliasingLevel = 8; // higher = smoother
@@ -19,6 +22,11 @@ namespace RoutePlanner {
                 std::cerr << "Error: Could not load font.ttf from assets folder" << std::endl;
             }
         }
+
+        // Selection state
+        int startNodeId = -1;
+        int endNodeId = -1;
+        std::vector<int> currentPath;
 
         // Find bounds. Same logic as ASCII, but pixels now
         double minX = 1e9, maxX = -1e9, minY = 1e9, maxY = -1e9;
@@ -45,6 +53,35 @@ namespace RoutePlanner {
                         window.close();
                     }
                 }
+
+                // Handle Mouse Clicks
+                if (event->is<sf::Event::MouseButtonPressed>()) {
+                    // Get mouse position
+                    auto mousePos = sf::Mouse::getPosition(window);
+                    
+                    sf::Vector2f worldPos = window.mapPixelToCoords(mousePos);
+
+                    // Find which node was clicked
+                    for (const auto& [id, node] : graph.getAllNodes()) {
+                        sf::Vector2f nodePos = toPixel(node.x, node.y);
+                        float dist = std::sqrt(std::pow(worldPos.x - nodePos.x, 2) + std::pow(worldPos.y - nodePos.y, 2));
+
+                        if (dist < 10.0f) { // 10 pixel hit box
+                            if (startNodeId == -1 || (startNodeId != -1 && endNodeId != -1)) {
+                                startNodeId = id;
+                                endNodeId = -1;
+                                currentPath.clear();
+                            } else {
+                                endNodeId = id;
+                                // Calc route immediately
+                                auto result = Router::computePath(graph, startNodeId, endNodeId);
+                                if (result.success) {
+                                    currentPath = result.path;
+                            }
+                            break;
+                        }
+                    }
+                }
             }
 
             window.clear(sf::Color(30,30,30)); // Dark grey
@@ -62,10 +99,10 @@ namespace RoutePlanner {
             }
 
             // Draw the Path (highlighted)
-            if (path.size() >= 2) {
-                for (size_t i = 0; i < path.size() - 1; ++i) {
-                    const Node* start = graph.getNode(path[i]);
-                    const Node* end = graph.getNode(path[i + 1]);
+            if (!currentPath.empty()) {
+                for (size_t i = 0; i < currentPath.size() - 1; ++i) {
+                    const Node* start = graph.getNode(currentPath[i]);
+                    const Node* end = graph.getNode(currentPath[i + 1]);
                     sf::Vertex line[] = {
                         {toPixel(start->x, start->y), sf::Color::Cyan},
                         {toPixel(end->x, end->y), sf::Color::Cyan}
@@ -79,14 +116,19 @@ namespace RoutePlanner {
                 sf::Vector2f pos = toPixel(node.x, node.y);
 
                 // Draw node dot
-                sf::CircleShape circle(5.f);
-                circle.setOrigin({5.f, 5.f});
+                sf::CircleShape circle(7.f);
+                circle.setOrigin({7.f, 7.f});
                 circle.setPosition(toPixel(node.x, node.y));
-
+                
+                circle.setFillColor(sf::Color::White);
                 // Start node is green, end is red, others white
-                if(id== path.front()) circle.setFillColor(sf::Color::Green);
-                else if(id== path.back()) circle.setFillColor(sf::Color::Red);
-                else circle.setFillColor(sf::Color::White);
+                if(!currentPath.empty()) {
+                    if(id== currentPath.front()) circle.setFillColor(sf::Color::Green);
+                    else if(id== currentPath.back()) circle.setFillColor(sf::Color::Red);
+                    
+                }
+                
+                
 
                 window.draw(circle);
 
@@ -101,7 +143,7 @@ namespace RoutePlanner {
             }
             window.display();
         }
-
+    }
     }
 
     void drawAsciiMap(const Graph& graph, const std::vector<int>& path) {
