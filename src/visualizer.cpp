@@ -2,6 +2,7 @@
 #include "route_planner/visualizer.hpp"
 #include "route_planner/router.hpp"
 #include <SFML/Graphics.hpp>
+#include <SFML/Window/Cursor.hpp>
 #include <cmath>
 #include <vector>
 #include <iostream>
@@ -26,6 +27,7 @@ namespace RoutePlanner {
         // Selection state
         int startNodeId = -1;
         int endNodeId = -1;
+        int hoveredNodeId = -1;
         std::vector<int> currentPath;
 
         // Find bounds. Same logic as ASCII, but pixels now
@@ -84,6 +86,28 @@ namespace RoutePlanner {
                 }
             }
 
+            // Handle Hover Logic (Every Frame)
+            auto mousePos = sf::Mouse::getPosition(window);
+            sf::Vector2f worldPos = window.mapPixelToCoords(mousePos);
+            
+            hoveredNodeId = -1; // Reset each frame
+            for (const auto& [id, node] : graph.getAllNodes()) {
+                sf::Vector2f nodePos = toPixel(node.x, node.y);
+                float dist = std::sqrt(std::pow(worldPos.x - nodePos.x, 2) + std::pow(worldPos.y - nodePos.y, 2));
+
+                if (dist < 12.0f) { // Slightly larger hitbox for hovering
+                    hoveredNodeId = id;
+                    break; 
+                }
+            }
+            if (hoveredNodeId != -1) {
+                const auto cursor = sf::Cursor::createFromSystem(sf::Cursor::Type::Hand).value();
+                window.setMouseCursor(cursor);
+            } else {
+                const auto cursor = sf::Cursor::createFromSystem(sf::Cursor::Type::Arrow).value();
+                window.setMouseCursor(cursor);
+            }
+
             window.clear(sf::Color(30,30,30)); // Dark grey
 
             // Draw ALL edges
@@ -119,17 +143,20 @@ namespace RoutePlanner {
                 sf::CircleShape circle(7.f);
                 circle.setOrigin({7.f, 7.f});
                 circle.setPosition(toPixel(node.x, node.y));
-                
+
                 circle.setFillColor(sf::Color::White);
                 // Start node is green, end is red, others white
                 if(!currentPath.empty()) {
                     if(id== currentPath.front()) circle.setFillColor(sf::Color::Green);
                     else if(id== currentPath.back()) circle.setFillColor(sf::Color::Red);
-                    
+                }
+
+                // Add outline to hovered node
+                if (id == hoveredNodeId) {
+                    circle.setOutlineThickness(2.f);
+                    circle.setOutlineColor(sf::Color::Cyan);
                 }
                 
-                
-
                 window.draw(circle);
 
                 // Draw label
