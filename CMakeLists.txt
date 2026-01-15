@@ -47,6 +47,9 @@ target_link_libraries(RoutePlannerTests RoutePlannerLib gtest_main)
 include(GoogleTest)
 gtest_discover_tests(RoutePlannerTests)
 
+# Add this to the end of CMakeLists.txt
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/assets" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
+
 # Include the headers
 # include_directories(include)
 
