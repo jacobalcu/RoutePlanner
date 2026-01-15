@@ -16,6 +16,10 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
+# Find SFML
+# Tells CMake to look in MSYS2 folder for SFML
+find_package(SFML 3 REQUIRED COMPONENTS Graphics Window System)
+
 # Project Library
 add_library(RoutePlannerLib
     src/graph.cpp
@@ -24,6 +28,11 @@ add_library(RoutePlannerLib
     src/visualizer.cpp
 )
 target_include_directories(RoutePlannerLib PUBLIC include)
+
+# Link SFML to library
+# ensures any code in RoutePlannerLib can use SFML
+target_link_libraries(RoutePlannerLib PUBLIC sfml-graphics sfml-window sfml-system)
+
 
 # Main Executable
 add_executable(RoutePlanner src/main.cpp)
