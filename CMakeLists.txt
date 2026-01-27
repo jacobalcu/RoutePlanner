@@ -19,10 +19,10 @@ FetchContent_MakeAvailable(googletest)
 # Find SFML
 # Tells CMake to look in MSYS2 folder for SFML
 find_package(SFML 3 QUIET COMPONENTS Graphics Window System)
-if(NOT SFML_FOUND)
-    message(STATUS "SFML 3 not found, trying SFML 2")
-    find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
-endif()
+# if(NOT SFML_FOUND)
+#     message(STATUS "SFML 3 not found, trying SFML 2")
+#     find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
+# endif()
 
 # Project Library
 add_library(RoutePlannerLib
